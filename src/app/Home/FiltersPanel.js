@@ -8,6 +8,7 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
 
   // For convenience, destructure the filters object
   const {
+    hideOldJobs,
     paymentVerified,
     postedHours,
     projectDuration,
@@ -70,11 +71,20 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Filters</h2>
         <button
-          className="mt-4 py-2 px-4 bg-green-600 text-white"
+          className="py-1.5 px-4 bg-blue-600 text-white rounded"
           onClick={onSaveFilters}
         >
           Save Filters
         </button>
+      </div>
+      <div className="flex items-center gap-2 mb-4">
+        <input
+          type="checkbox"
+          id="hideOldJobs"
+          checked={hideOldJobs}
+          onChange={() => updateFilter("hideOldJobs", !hideOldJobs)}
+        />
+        <label htmlFor="hideOldJobs">Don't Show Old Jobs</label>
       </div>
       {/* Payment Verified */}
       <div className="flex items-center gap-2 mb-4">

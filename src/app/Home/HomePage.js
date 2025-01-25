@@ -20,6 +20,7 @@ export default function HomePage() {
   // =====================
   const [filters, setFilters] = useState({
     paymentVerified: false,
+    hideOldJobs: false,
     postedHours: 0,
     projectDuration: "",
     budgetMin: "",
@@ -112,10 +113,11 @@ export default function HomePage() {
             paymentVerified: payStatus,
             jobType: typeString,
             duration: raw.durationLabel,
+            description: raw.description,
             budget: raw.amount?.amount || 0,
             hourlyRate,
             connectPrice: raw.connectPrice || 0,
-
+            ciphertext: raw.ciphertext,
             client: {
               dollarSpent: raw.client?.totalSpent || 0,
               hires: raw.client?.totalHires || 0,
@@ -140,126 +142,158 @@ export default function HomePage() {
     }
   };
 
+  function getOldJobs() {
+    const stored = localStorage.getItem("oldJobIds");
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  // A helper to save an ID into localStorage
+  function storeOldJob(jobs) {
+    const oldJobs = getOldJobs();
+    // If not already stored, add it
+    jobs.map((job) => {
+      console.log(job);
+
+      if (!oldJobs.includes(job.ciphertext)) {
+        oldJobs.push(job.ciphertext);
+        localStorage.setItem("oldJobIds", JSON.stringify(oldJobs));
+      }
+    });
+  }
+
   // =====================
   // 5. Filter logic
   // =====================
   const filteredJobs = useMemo(() => {
-    return jobs.filter((job) => {
-      // Destructure filters for convenience
-      const {
-        paymentVerified,
-        postedHours,
-        projectDuration,
-        budgetMin,
-        budgetMax,
-        jobType,
-        connectRangeMin,
-        connectRangeMax,
+    let filterJob = null;
+    if (filters.hideOldJobs) {
+      const oldJobs = getOldJobs(); // read from localStorage or from Redux
+      filterJob = jobs.filter((job) => !oldJobs.includes(job.ciphertext));
+    }
 
-        dollarSpentMin,
-        dollarSpentMax,
-        hiresMin,
-        hiresMax,
-        includeLocations,
-        excludeLocations,
+    return filterJob
+      ? filterJob
+      : jobs.filter((job) => {
+          // Destructure filters for convenience
+          const {
+            paymentVerified,
+            postedHours,
+            projectDuration,
+            budgetMin,
+            budgetMax,
+            jobType,
+            connectRangeMin,
+            connectRangeMax,
 
-        reviewsCountMin,
-        reviewsCountMax,
-        isEnterprise,
-        isPremium,
+            dollarSpentMin,
+            dollarSpentMax,
+            hiresMin,
+            hiresMax,
+            includeLocations,
+            excludeLocations,
 
-        skillsFilter,
-        tier,
-        proposalsMin,
-        proposalsMax,
+            reviewsCountMin,
+            reviewsCountMax,
+            isEnterprise,
+            isPremium,
 
-        hourlyMin,
-        hourlyMax,
-      } = filters;
+            skillsFilter,
+            tier,
+            proposalsMin,
+            proposalsMax,
 
-      // 1. Payment verified
-      if (paymentVerified && !job.paymentVerified) return false;
+            hourlyMin,
+            hourlyMax,
+          } = filters;
 
-      // 2. Posted within X hours
-      if (postedHours > 0) {
-        const now = new Date();
-        const published = new Date(job.postedTime);
-        const diffHours = (now - published) / 36e5;
-        if (diffHours > postedHours) return false;
-      }
+          // 1. Payment verified
+          if (paymentVerified && !job.paymentVerified) return false;
 
-      // 3. Project duration
-      if (projectDuration && job.duration !== projectDuration) return false;
+          // 2. Posted within X hours
+          if (postedHours > 0) {
+            const now = new Date();
+            const published = new Date(job.postedTime);
+            const diffHours = (now - published) / 36e5;
+            if (diffHours > postedHours) return false;
+          }
 
-      // 4. Budget range (only for fixed)
-      if (job.jobType === "fixed") {
-        if (budgetMin && job.budget < budgetMin) return false;
-        if (budgetMax && job.budget > budgetMax) return false;
-      }
+          // 3. Project duration
+          if (projectDuration && job.duration !== projectDuration) return false;
 
-      // 5. Job Type
-      if (jobType !== "both" && job.jobType !== jobType) return false;
+          // 4. Budget range (only for fixed)
+          if (job.jobType === "fixed") {
+            if (budgetMin && job.budget < budgetMin) return false;
+            if (budgetMax && job.budget > budgetMax) return false;
+          }
 
-      // 6. Connect range
-      if (connectRangeMin && job.connectPrice < connectRangeMin) return false;
-      if (connectRangeMax && job.connectPrice > connectRangeMax) return false;
+          // 5. Job Type
+          if (jobType !== "both" && job.jobType !== jobType) return false;
 
-      // 7. Client filters
-      const client = job.client;
-      // dollarSpent
-      if (dollarSpentMin && client.dollarSpent < dollarSpentMin) return false;
-      if (dollarSpentMax && client.dollarSpent > dollarSpentMax) return false;
-      // hires
-      if (hiresMin && client.hires < hiresMin) return false;
-      if (hiresMax && client.hires > hiresMax) return false;
+          // 6. Connect range
+          if (connectRangeMin && job.connectPrice < connectRangeMin)
+            return false;
+          if (connectRangeMax && job.connectPrice > connectRangeMax)
+            return false;
 
-      // location includes / excludes
-      if (
-        includeLocations.length > 0 &&
-        !includeLocations.includes(client.location)
-      ) {
-        return false;
-      }
-      if (
-        excludeLocations.length > 0 &&
-        excludeLocations.includes(client.location)
-      ) {
-        return false;
-      }
+          // 7. Client filters
+          const client = job.client;
+          // dollarSpent
+          if (dollarSpentMin && client.dollarSpent < dollarSpentMin)
+            return false;
+          if (dollarSpentMax && client.dollarSpent > dollarSpentMax)
+            return false;
+          // hires
+          if (hiresMin && client.hires < hiresMin) return false;
+          if (hiresMax && client.hires > hiresMax) return false;
 
-      // reviews
-      if (reviewsCountMin && client.reviewsCount < reviewsCountMin)
-        return false;
-      if (reviewsCountMax && client.reviewsCount > reviewsCountMax)
-        return false;
+          // location includes / excludes
+          if (
+            includeLocations.length > 0 &&
+            !includeLocations.includes(client.location)
+          ) {
+            return false;
+          }
+          if (
+            excludeLocations.length > 0 &&
+            excludeLocations.includes(client.location)
+          ) {
+            return false;
+          }
 
-      // enterprise / premium
-      if (isEnterprise && !job.isEnterprise) return false;
-      if (isPremium && !job.isPremium) return false;
+          // reviews
+          if (reviewsCountMin && client.reviewsCount < reviewsCountMin)
+            return false;
+          if (reviewsCountMax && client.reviewsCount > reviewsCountMax)
+            return false;
 
-      // 8. Skills filter
-      if (skillsFilter.length > 0) {
-        const hasAll = skillsFilter.every((skill) =>
-          job.skills.includes(skill)
-        );
-        if (!hasAll) return false;
-      }
+          // enterprise / premium
+          if (isEnterprise && !job.isEnterprise) return false;
+          if (isPremium && !job.isPremium) return false;
 
-      // 9. Tier filter
-      if (tier && job.tier.toLowerCase() !== tier.toLowerCase()) return false;
+          // 8. Skills filter
+          if (skillsFilter.length > 0) {
+            const hasAll = skillsFilter.every((skill) =>
+              job.skills.includes(skill)
+            );
+            if (!hasAll) return false;
+          }
 
-      // 10. Proposals
-      if (proposalsMin && job.proposals < proposalsMin) return false;
-      if (proposalsMax && job.proposals > proposalsMax) return false;
+          // 9. Tier filter
+          if (tier && job.tier.toLowerCase() !== tier.toLowerCase())
+            return false;
 
-      // 11. Hourly range
-      if (job.jobType === "hourly") {
-        if (hourlyMin && job.hourlyRate < hourlyMin) return false;
-        if (hourlyMax && job.hourlyRate > hourlyMax) return false;
-      }
+          // 10. Proposals
+          if (proposalsMin && job.proposals < proposalsMin) return false;
+          if (proposalsMax && job.proposals > proposalsMax) return false;
 
-      return true;
-    });
+          // 11. Hourly range
+          if (job.jobType === "hourly") {
+            if (hourlyMin && job.hourlyRate < hourlyMin) return false;
+            if (hourlyMax && job.hourlyRate > hourlyMax) return false;
+          }
+
+          return true;
+        });
   }, [jobs, filters]);
 
   // =====================
@@ -267,13 +301,12 @@ export default function HomePage() {
   // =====================
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex">
-      <div className="max-h-dvh overflow-auto p-4">
+      <div className="max-h-dvh overflow-auto p-3 w-96">
         <JsonInput
           jsonInput={jsonInput}
           setJsonInput={setJsonInput}
           onParseJson={handleParseJson}
         />
-
         <FiltersPanel
           filters={filters}
           updateFilter={updateFilter}
@@ -281,7 +314,7 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="p-4">
+      <div className="p-4 w-[calc(100%-384px)] max-h-dvh overflow-auto">
         <FilteredJobsList filteredJobs={filteredJobs} />
       </div>
     </div>

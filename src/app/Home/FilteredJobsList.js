@@ -4,13 +4,23 @@ import JobCard from "./JobCard";
 export default function FilteredJobsList({ filteredJobs = [] }) {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-2">
-        3. Filtered Results ({filteredJobs.length})
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">
+          Filtered Results ({filteredJobs.length})
+        </h2>
+        {filteredJobs && filteredJobs.length > 0 && (
+          <button
+            className="py-2 px-4 bg-blue-600 text-white rounded"
+            onClick={() => storeOldJob(jobs)}
+          >
+            Hide All Job
+          </button>
+        )}
+      </div>
       {filteredJobs.length === 0 && (
         <p className="text-gray-500">No jobs match the selected filters.</p>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex flex-col gap-4">
         {filteredJobs.map((job, index) => (
           <JobCard key={index} job={job} />
         ))}
