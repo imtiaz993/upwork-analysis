@@ -1,7 +1,8 @@
 import React from "react";
 import JobCard from "./JobCard";
+import toast from "react-hot-toast";
 
-export default function FilteredJobsList({ filteredJobs = [] }) {
+export default function FilteredJobsList({ filteredJobs = [], storeOldJob }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -11,7 +12,10 @@ export default function FilteredJobsList({ filteredJobs = [] }) {
         {filteredJobs && filteredJobs.length > 0 && (
           <button
             className="py-2 px-4 bg-blue-600 text-white rounded"
-            onClick={() => storeOldJob(jobs)}
+            onClick={() => {
+              storeOldJob(jobs);
+              toast.success("Jobs removed from list.");
+            }}
           >
             Hide All Job
           </button>
@@ -22,7 +26,7 @@ export default function FilteredJobsList({ filteredJobs = [] }) {
       )}
       <div className="flex flex-col gap-4">
         {filteredJobs.map((job, index) => (
-          <JobCard key={index} job={job} />
+          <JobCard key={index} job={job} storeOldJob={storeOldJob} />
         ))}
       </div>
     </div>

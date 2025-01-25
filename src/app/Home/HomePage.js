@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import JsonInput from "./JsonInput";
 import FiltersPanel from "./FiltersPanel";
 import FilteredJobsList from "./FilteredJobsList";
+import toast from "react-hot-toast";
 
 export default function HomePage() {
   // =====================
@@ -152,8 +153,6 @@ export default function HomePage() {
     const oldJobs = getOldJobs();
     // If not already stored, add it
     jobs.map((job) => {
-      console.log(job);
-
       if (!oldJobs.includes(job.ciphertext)) {
         oldJobs.push(job.ciphertext);
         localStorage.setItem("oldJobIds", JSON.stringify(oldJobs));
@@ -315,7 +314,10 @@ export default function HomePage() {
       </div>
 
       <div className="p-4 w-[calc(100%-384px)] max-h-dvh overflow-auto">
-        <FilteredJobsList filteredJobs={filteredJobs} />
+        <FilteredJobsList
+          filteredJobs={filteredJobs}
+          storeOldJob={storeOldJob}
+        />
       </div>
     </div>
   );
