@@ -1,6 +1,11 @@
 import React, { useState } from "react";
+import Select from "react-select";
+import { Switch } from "@headlessui/react";
+import { countryOptions } from "./countryList";
 
 export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
+  const [isInclude, setIsInclude] = useState(true);
+
   // We can still use local states for comma-separated fields (locations, skills)
   const [includeLocationsInput, setIncludeLocationsInput] = useState("");
   const [excludeLocationsInput, setExcludeLocationsInput] = useState("");
@@ -58,6 +63,16 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
       .map((s) => s.trim())
       .filter(Boolean);
     updateFilter("skillsFilter", list);
+  };
+
+  // Handle country selection
+  const handleCountryChange = (selectedOptions) => {
+    const selectedCountries = selectedOptions.map((option) => option.value);
+    if (isInclude) {
+      updateFilter("includeLocations", selectedCountries);
+    } else {
+      updateFilter("excludeLocations", selectedCountries);
+    }
   };
 
   return (
@@ -189,31 +204,40 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
           </div>
         </div>
 
-        <div className="mb-2">
-          <label className="block mb-1">
-            Include Locations (comma-separated):
-          </label>
-          <input
-            type="text"
-            className="border p-1 w-full"
-            placeholder="e.g. United States, Czech Republic"
-            value={includeLocationsInput}
-            onChange={(e) => setIncludeLocationsInput(e.target.value)}
-            onBlur={handleIncludeLocationsBlur}
-          />
+        {/* Country Include/Exclude Toggle */}
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">Country Filter</label>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-gray-700 font-medium">
+              {isInclude ? "Include" : "Exclude"}
+            </span>
+            <Switch
+              checked={isInclude}
+              onChange={setIsInclude}
+              className={`${
+                isInclude ? "bg-blue-600" : "bg-red-600"
+              } relative inline-flex h-6 w-11 items-center rounded-full`}
+            >
+              <span
+                className={`${
+                  isInclude ? "translate-x-6" : "translate-x-1"
+                } inline-block h-4 w-4 transform bg-white rounded-full transition`}
+              />
+            </Switch>
+          </div>
         </div>
 
-        <div className="mb-2">
-          <label className="block mb-1">
-            Exclude Locations (comma-separated):
+        {/* Country Dropdown */}
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">
+            {isInclude ? "Include Countries" : "Exclude Countries"}
           </label>
-          <input
-            type="text"
-            className="border p-1 w-full"
-            placeholder="e.g. India, Russia"
-            value={excludeLocationsInput}
-            onChange={(e) => setExcludeLocationsInput(e.target.value)}
-            onBlur={handleExcludeLocationsBlur}
+          <Select
+            options={countryOptions}
+            isMulti
+            className="border border-gray-300 rounded"
+            placeholder="Select countries..."
+            onChange={handleCountryChange}
           />
         </div>
 
