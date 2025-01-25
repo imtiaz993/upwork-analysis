@@ -67,7 +67,7 @@ export default function FiltersPanel({ filters, setFilters, updateFilter }) {
 
   return (
     <div className="mb-6 bg-white p-4 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4">2. Filters</h2>
+      <h2 className="text-xl font-semibold mb-4">Filters</h2>
 
       {/* Payment Verified */}
       <div className="flex items-center gap-2 mb-4">

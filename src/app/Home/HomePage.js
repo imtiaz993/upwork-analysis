@@ -63,7 +63,7 @@ export default function HomePage() {
   // =====================
   const handleParseJson = () => {
     try {
-      const parsed = JSON.parse(jsonInput);
+      const parsed = JSON.parse(jsonInput).data.bestMatchJobsFeed.results;
       if (Array.isArray(parsed)) {
         const transformed = parsed.map((raw) => {
           const payStatus = raw.client?.paymentVerificationStatus === 1;
@@ -248,25 +248,24 @@ export default function HomePage() {
   // RENDER
   // =====================
   return (
-    <div className="min-h-screen p-4 bg-gray-50 text-gray-800">
-      <h1 className="text-3xl font-bold mb-4">Job Filtering Demo</h1>
+    <div className="min-h-screen bg-gray-50 text-gray-800 flex">
+      <div className="max-h-dvh overflow-auto p-4">
+        <JsonInput
+          jsonInput={jsonInput}
+          setJsonInput={setJsonInput}
+          onParseJson={handleParseJson}
+        />
 
-      {/* JSON Input */}
-      <JsonInput
-        jsonInput={jsonInput}
-        setJsonInput={setJsonInput}
-        onParseJson={handleParseJson}
-      />
+        <FiltersPanel
+          filters={filters}
+          setFilters={setFilters}
+          updateFilter={updateFilter}
+        />
+      </div>
 
-      {/* Filters Panel */}
-      <FiltersPanel
-        filters={filters}
-        setFilters={setFilters}
-        updateFilter={updateFilter}
-      />
-
-      {/* Filtered Results */}
-      <FilteredJobsList filteredJobs={filteredJobs} />
+      <div className="p-4">
+        <FilteredJobsList filteredJobs={filteredJobs} />
+      </div>
     </div>
   );
 }
