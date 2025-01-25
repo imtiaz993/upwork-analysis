@@ -11,21 +11,21 @@ import {
   HiOutlineUsers,
   HiOutlineClipboardList,
   HiOutlineStar,
-  HiOutlineLightningBolt,
   HiTrash,
+  HiStar,
 } from "react-icons/hi";
 
 function JobCard({ job, storeOldJob }) {
   const { client } = job;
   const [showMore, setShowMore] = useState(false);
+  console.log(job);
 
-  const timeAgo = job.postedTime
-    ? formatDistanceToNow(new Date(job.postedTime))
+  const timeAgo = job.publishedOn
+    ? formatDistanceToNow(new Date(job.publishedOn))
     : "N/A";
 
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-4">
-      {/* Header */}
       <div className="flex justify-between items-start">
         <div className="space-y-1">
           <p className="text-sm text-gray-500 capitalize">
@@ -34,7 +34,6 @@ function JobCard({ job, storeOldJob }) {
           <h2 className="text-2xl font-semibold text-gray-900">{job.title}</h2>
         </div>
 
-        {/* "Hide/Remove Job" button */}
         <div>
           <button
             className="p-2 rounded-full text-gray-600 hover:text-red-600"
@@ -49,18 +48,19 @@ function JobCard({ job, storeOldJob }) {
         </div>
       </div>
 
-      {/* Budget / Type / Tier */}
       <div className="flex items-center gap-2 text-gray-700">
         <HiOutlineCurrencyDollar className="h-5 w-5 text-green-600" />
-        <p className="capitalize">
-          {job.jobType} – {job.tier} –{" "}
+        <p className="">
+          {job.type === 1 ? "Fixed-price" : "Hourly: "}
           <span className="font-bold">
-            Budget: ${numeral(job.budget).format("0.[0]a")}
-          </span>
+            {job.type === 1
+              ? " - Budget: $" + numeral(job.amount?.amount).format("0.[0]a")
+              : job.hourlyBudget?.min + " - $" + job.hourlyBudget?.max}
+          </span>{" "}
+          – {job.tier}
         </p>
       </div>
 
-      {/* Description */}
       <p className="text-gray-600 text-sm">
         <span className={showMore ? "" : "line-clamp-3"}>
           {job.description}
@@ -73,30 +73,26 @@ function JobCard({ job, storeOldJob }) {
         </button>
       </p>
 
-      {/* Skills / Tags */}
       <div className="flex flex-wrap gap-2">
         {job.skills.map((tag) => (
           <span
             key={tag}
             className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
           >
-            {tag}
+            {tag.prefLabel}
           </span>
         ))}
       </div>
 
-      {/* Footer Stats */}
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-4 border-t border-gray-200 text-gray-500">
-        {/* Connect Price */}
         <div className="flex items-center gap-2">
           <HiOutlineCurrencyDollar className="h-5 w-5 text-gray-500" />
           Connect Price:{" "}
           <span className="text-gray-700 font-bold">{job.connectPrice}</span>
         </div>
 
-        {/* Payment Verified / Unverified */}
         <div className="flex items-center gap-2">
-          {job.paymentVerified ? (
+          {job.client?.paymentVerificationStatus === 1 ? (
             <>
               <HiOutlineCheckCircle className="h-5 w-5 text-green-600" />
               <span className="text-green-600 font-medium">
@@ -113,41 +109,43 @@ function JobCard({ job, storeOldJob }) {
           )}
         </div>
 
-        {/* Dollar Spent */}
         <div className="flex items-center gap-2">
           <HiOutlineCurrencyDollar className="h-5 w-5 text-gray-500" />
-          <strong>{numeral(client.dollarSpent).format("0.[0]a")}</strong>spent
+          <strong>{numeral(client.totalSpent).format("0.[0]a")}</strong>spent
         </div>
 
-        {/* Location */}
         <div className="flex items-center gap-2">
           <HiOutlineLocationMarker className="h-5 w-5 text-gray-500" />
-          {client.location}
+          {client.location?.country}
+        </div>
+        <div className="flex items-center gap-2">
+          <HiOutlineLocationMarker className="h-5 w-5 text-gray-500" />
+          Engagement: <strong>{job.type === 2 ? job.engagement : ""}</strong>
         </div>
 
-        {/* Proposals */}
         <div className="flex items-center gap-2">
           <HiOutlineClipboardList className="h-5 w-5 text-gray-500" />
-          Proposals:{" "}
-          <strong>{job.proposals === 0 ? "N/A" : `${job.proposals}+`}</strong>
+          Proposals: <strong>{job.proposalsTier}</strong>
         </div>
 
-        {/* Duration */}
         <div className="flex items-center gap-2">
           <HiOutlineClock className="h-5 w-5 text-gray-500" />
-          Duration: {job.duration}
+          Duration: {job.durationLabel}
         </div>
 
-        {/* Hires */}
         <div className="flex items-center gap-2">
           <HiOutlineUsers className="h-5 w-5 text-gray-500" />
-          Hires: <strong>{client.hires}</strong>
+          Hires: <strong>{client.totalHires}</strong>
         </div>
 
-        {/* Reviews */}
+        <div className="flex items-center gap-2">
+          <HiStar className="h-5 w-5 text-gray-500" />
+          Feedbacks: <strong>{client.totalFeedback}</strong>
+        </div>
+
         <div className="flex items-center gap-2">
           <HiOutlineStar className="h-5 w-5 text-gray-500" />
-          Reviews: <strong>{client.reviewsCount}</strong>
+          Reviews: <strong>{client.totalReviews}</strong>
         </div>
       </div>
     </div>

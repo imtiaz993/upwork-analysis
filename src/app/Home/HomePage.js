@@ -3,51 +3,26 @@ import { useState, useMemo, useEffect } from "react";
 import JsonInput from "./JsonInput";
 import FiltersPanel from "./FiltersPanel";
 import FilteredJobsList from "./FilteredJobsList";
-import toast from "react-hot-toast";
 
 export default function HomePage() {
-  // =====================
-  // 1. Raw JSON input
-  // =====================
   const [jsonInput, setJsonInput] = useState("");
-
-  // =====================
-  // 2. Parsed jobs
-  // =====================
   const [jobs, setJobs] = useState([]);
-
-  // =====================
-  // 3. Filters in ONE object
-  // =====================
   const [filters, setFilters] = useState({
-    paymentVerified: false,
     hideOldJobs: false,
+    paymentVerified: false,
     postedHours: 0,
-    projectDuration: "",
     budgetMin: "",
     budgetMax: "",
-    jobType: "both",
     connectRangeMin: "",
     connectRangeMax: "",
-
     dollarSpentMin: "",
     dollarSpentMax: "",
     hiresMin: "",
     hiresMax: "",
-    includeLocations: [],
-    excludeLocations: [],
-
     reviewsCountMin: "",
     reviewsCountMax: "",
-    isEnterprise: false,
-    isPremium: false,
-
-    skillsFilter: [],
-
-    tier: "",
     proposalsMin: "",
     proposalsMax: "",
-
     hourlyMin: "",
     hourlyMax: "",
   });
@@ -78,65 +53,10 @@ export default function HomePage() {
     }));
   };
 
-  // =====================
-  // 4. Parse JSON
-  // =====================
   const handleParseJson = () => {
     try {
       const parsed = JSON.parse(jsonInput).data.bestMatchJobsFeed.results;
-      if (Array.isArray(parsed)) {
-        const transformed = parsed.map((raw) => {
-          const payStatus = raw.client?.paymentVerificationStatus === 1;
-
-          let typeString = "other";
-          if (raw.type === 1) typeString = "fixed";
-          if (raw.type === 2) typeString = "hourly";
-
-          // Convert proposals string (e.g. "50+") into a number
-          let proposalsNum = 0;
-          if (typeof raw.proposalsTier === "string") {
-            const numeric = parseInt(raw.proposalsTier);
-            if (!isNaN(numeric)) {
-              proposalsNum = numeric;
-            }
-          }
-
-          // Collect skill names
-          const skillLabels = raw.skills?.map((s) => s.prefLabel) || [];
-
-          // For demo, let's pick the "max" as the hourlyRate
-          const hourlyRate = raw.hourlyBudget?.max || 0;
-
-          return {
-            title: raw.title,
-            description: raw.description,
-            postedTime: raw.publishedOn,
-            paymentVerified: payStatus,
-            jobType: typeString,
-            duration: raw.durationLabel,
-            description: raw.description,
-            budget: raw.amount?.amount || 0,
-            hourlyRate,
-            connectPrice: raw.connectPrice || 0,
-            ciphertext: raw.ciphertext,
-            client: {
-              dollarSpent: raw.client?.totalSpent || 0,
-              hires: raw.client?.totalHires || 0,
-              location: raw.client?.location?.country || "Unknown",
-              reviewsCount: raw.client?.totalReviews || 0,
-            },
-
-            isEnterprise: raw.enterpriseJob || false,
-            isPremium: raw.premium || false,
-            skills: skillLabels,
-            tier: raw.tier || "",
-            proposals: proposalsNum,
-          };
-        });
-        setJobs(transformed);
-      } else {
-        alert("JSON must be an array of job objects");
-      }
+      setJobs(parsed);
     } catch (error) {
       console.error(error);
       alert("Invalid JSON format");
@@ -160,9 +80,6 @@ export default function HomePage() {
     });
   }
 
-  // =====================
-  // 5. Filter logic
-  // =====================
   const filteredJobs = useMemo(() => {
     let filterJob = null;
     if (filters.hideOldJobs) {
@@ -173,38 +90,27 @@ export default function HomePage() {
     return filterJob
       ? filterJob
       : jobs.filter((job) => {
-          // Destructure filters for convenience
           const {
             paymentVerified,
             postedHours,
-            projectDuration,
             budgetMin,
             budgetMax,
-            jobType,
             connectRangeMin,
             connectRangeMax,
-
             dollarSpentMin,
             dollarSpentMax,
             hiresMin,
             hiresMax,
-            includeLocations,
-            excludeLocations,
-
             reviewsCountMin,
             reviewsCountMax,
-            isEnterprise,
-            isPremium,
-
-            skillsFilter,
-            tier,
             proposalsMin,
             proposalsMax,
-
             hourlyMin,
             hourlyMax,
           } = filters;
-
+          console.log(job.isApplied);
+          
+          if (!job.isApplied) return false;
           // 1. Payment verified
           if (paymentVerified && !job.paymentVerified) return false;
 
@@ -216,17 +122,11 @@ export default function HomePage() {
             if (diffHours > postedHours) return false;
           }
 
-          // 3. Project duration
-          if (projectDuration && job.duration !== projectDuration) return false;
-
           // 4. Budget range (only for fixed)
           if (job.jobType === "fixed") {
             if (budgetMin && job.budget < budgetMin) return false;
             if (budgetMax && job.budget > budgetMax) return false;
           }
-
-          // 5. Job Type
-          if (jobType !== "both" && job.jobType !== jobType) return false;
 
           // 6. Connect range
           if (connectRangeMin && job.connectPrice < connectRangeMin)
@@ -245,40 +145,10 @@ export default function HomePage() {
           if (hiresMin && client.hires < hiresMin) return false;
           if (hiresMax && client.hires > hiresMax) return false;
 
-          // location includes / excludes
-          if (
-            includeLocations.length > 0 &&
-            !includeLocations.includes(client.location)
-          ) {
-            return false;
-          }
-          if (
-            excludeLocations.length > 0 &&
-            excludeLocations.includes(client.location)
-          ) {
-            return false;
-          }
-
           // reviews
           if (reviewsCountMin && client.reviewsCount < reviewsCountMin)
             return false;
           if (reviewsCountMax && client.reviewsCount > reviewsCountMax)
-            return false;
-
-          // enterprise / premium
-          if (isEnterprise && !job.isEnterprise) return false;
-          if (isPremium && !job.isPremium) return false;
-
-          // 8. Skills filter
-          if (skillsFilter.length > 0) {
-            const hasAll = skillsFilter.every((skill) =>
-              job.skills.includes(skill)
-            );
-            if (!hasAll) return false;
-          }
-
-          // 9. Tier filter
-          if (tier && job.tier.toLowerCase() !== tier.toLowerCase())
             return false;
 
           // 10. Proposals
@@ -295,9 +165,6 @@ export default function HomePage() {
         });
   }, [jobs, filters]);
 
-  // =====================
-  // RENDER
-  // =====================
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex">
       <div className="max-h-dvh overflow-auto p-3 w-96 shadow">
