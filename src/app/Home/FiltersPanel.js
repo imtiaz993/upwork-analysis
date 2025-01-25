@@ -6,11 +6,6 @@ import { countryOptions } from "./countryList";
 export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
   const [isInclude, setIsInclude] = useState(true);
 
-  // We can still use local states for comma-separated fields (locations, skills)
-  const [includeLocationsInput, setIncludeLocationsInput] = useState("");
-  const [excludeLocationsInput, setExcludeLocationsInput] = useState("");
-  const [skillsInput, setSkillsInput] = useState("");
-
   // For convenience, destructure the filters object
   const {
     hideOldJobs,
@@ -25,8 +20,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
     dollarSpentMax,
     hiresMin,
     hiresMax,
-    includeLocations,
-    excludeLocations,
 
     reviewsCountMin,
     reviewsCountMax,
@@ -37,33 +30,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
     hourlyMin,
     hourlyMax,
   } = filters;
-
-  // Handle updating locations on blur
-  const handleIncludeLocationsBlur = () => {
-    const list = includeLocationsInput
-      .split(",")
-      .map((c) => c.trim())
-      .filter(Boolean);
-    // Update the filter object with new array
-    updateFilter("includeLocations", list);
-  };
-
-  const handleExcludeLocationsBlur = () => {
-    const list = excludeLocationsInput
-      .split(",")
-      .map((c) => c.trim())
-      .filter(Boolean);
-    updateFilter("excludeLocations", list);
-  };
-
-  // Handle updating skills on blur
-  const handleSkillsBlur = () => {
-    const list = skillsInput
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    updateFilter("skillsFilter", list);
-  };
 
   // Handle country selection
   const handleCountryChange = (selectedOptions) => {
@@ -86,15 +52,23 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
           Save Filters
         </button>
       </div>
-      <div className="flex items-center gap-2 mb-4">
-        <input
-          type="checkbox"
-          id="hideOldJobs"
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-gray-700 font-medium">Hide Jobs</span>
+        <Switch
           checked={hideOldJobs}
           onChange={() => updateFilter("hideOldJobs", !hideOldJobs)}
-        />
-        <label htmlFor="hideOldJobs">Don't Show Old Jobs</label>
+          className={`${
+            hideOldJobs ? "bg-blue-600" : "bg-red-600"
+          } relative inline-flex h-6 w-11 items-center rounded-full`}
+        >
+          <span
+            className={`${
+              hideOldJobs ? "translate-x-6" : "translate-x-1"
+            } inline-block h-4 w-4 transform bg-white rounded-full transition`}
+          />
+        </Switch>
       </div>
+
       {/* Payment Verified */}
       <div className="flex items-center gap-2 mb-4">
         <input
@@ -260,21 +234,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
             />
           </div>
         </div>
-      </div>
-
-      {/* Skills Filter */}
-      <div className="border-t pt-4 mt-4">
-        <label className="block mb-1 font-medium">
-          Skills (comma-separated):
-        </label>
-        <input
-          type="text"
-          className="border p-1 w-full"
-          placeholder="e.g. React, CSS, HTML"
-          value={skillsInput}
-          onChange={(e) => setSkillsInput(e.target.value)}
-          onBlur={handleSkillsBlur}
-        />
       </div>
 
       {/* Proposals */}

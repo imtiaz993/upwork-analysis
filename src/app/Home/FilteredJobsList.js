@@ -41,17 +41,19 @@ export default function FilteredJobsList({ filteredJobs = [], storeOldJob }) {
             </button>
           ))}
         </div>
-        {filteredJobs && filteredJobs.length > 0 && (
-          <button
-            className="py-2 px-4 bg-blue-600 text-white rounded"
-            onClick={() => {
-              storeOldJob(jobs);
-              toast.success("Jobs removed from list.");
-            }}
-          >
-            Hide All Job
-          </button>
-        )}
+        <div>
+          {filteredJobs && filteredJobs.length > 0 && (
+            <button
+              className="py-2 px-4 bg-blue-600 text-white rounded"
+              onClick={() => {
+                storeOldJob(jobs);
+                toast.success("Jobs removed from list.");
+              }}
+            >
+              Hide All Job
+            </button>
+          )}
+        </div>
       </div>
       {filteredJobs.length === 0 && (
         <p className="text-gray-500 p-4">No jobs match the selected filters.</p>
