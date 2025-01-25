@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function FiltersPanel({ filters, setFilters, updateFilter }) {
+export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
   // We can still use local states for comma-separated fields (locations, skills)
   const [includeLocationsInput, setIncludeLocationsInput] = useState("");
   const [excludeLocationsInput, setExcludeLocationsInput] = useState("");
@@ -67,8 +67,15 @@ export default function FiltersPanel({ filters, setFilters, updateFilter }) {
 
   return (
     <div className="mb-6 bg-white p-4 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4">Filters</h2>
-
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Filters</h2>
+        <button
+          className="mt-4 py-2 px-4 bg-green-600 text-white"
+          onClick={onSaveFilters}
+        >
+          Save Filters
+        </button>
+      </div>
       {/* Payment Verified */}
       <div className="flex items-center gap-2 mb-4">
         <input

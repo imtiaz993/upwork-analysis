@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import JsonInput from "./JsonInput";
 import FiltersPanel from "./FiltersPanel";
 import FilteredJobsList from "./FilteredJobsList";
@@ -49,6 +49,24 @@ export default function HomePage() {
     hourlyMin: "",
     hourlyMax: "",
   });
+
+  // On mount, try to load filters from localStorage
+  useEffect(() => {
+    const savedFilters = localStorage.getItem("savedUpworkFilters");
+    if (savedFilters) {
+      try {
+        const parsed = JSON.parse(savedFilters);
+        setFilters(parsed);
+      } catch (err) {
+        console.error("Error parsing filters from localStorage", err);
+      }
+    }
+  }, []);
+
+  // A helper to manually save filters to localStorage
+  const handleSaveFilters = () => {
+    localStorage.setItem("savedUpworkFilters", JSON.stringify(filters));
+  };
 
   // Helper to update a single field in the `filters` object
   const updateFilter = (fieldName, value) => {
@@ -258,8 +276,8 @@ export default function HomePage() {
 
         <FiltersPanel
           filters={filters}
-          setFilters={setFilters}
           updateFilter={updateFilter}
+          onSaveFilters={handleSaveFilters}
         />
       </div>
 
