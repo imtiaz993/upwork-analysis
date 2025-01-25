@@ -300,7 +300,7 @@ export default function HomePage() {
   // =====================
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex">
-      <div className="max-h-dvh overflow-auto p-3 w-96">
+      <div className="max-h-dvh overflow-auto p-3 w-96 shadow">
         <JsonInput
           jsonInput={jsonInput}
           setJsonInput={setJsonInput}
@@ -313,7 +313,7 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="p-4 w-[calc(100%-384px)] max-h-dvh overflow-auto">
+      <div className="w-[calc(100%-384px)] max-h-dvh overflow-auto">
         <FilteredJobsList
           filteredJobs={filteredJobs}
           storeOldJob={storeOldJob}

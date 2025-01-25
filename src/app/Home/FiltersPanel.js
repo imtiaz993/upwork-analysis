@@ -108,22 +108,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
         />
       </div>
 
-      {/* Project Duration */}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Project Duration:</label>
-        <select
-          className="border p-1"
-          value={projectDuration}
-          onChange={(e) => updateFilter("projectDuration", e.target.value)}
-        >
-          <option value="">All Durations</option>
-          <option value="Less than 1 month">Less than 1 month</option>
-          <option value="1 to 3 months">1 to 3 months</option>
-          <option value="3 to 6 months">3 to 6 months</option>
-          <option value="More than 6 months">More than 6 months</option>
-        </select>
-      </div>
-
       {/* Budget Range (Fixed) */}
       <div className="mb-4">
         <label className="block mb-1 font-medium">Budget Range (Fixed):</label>
@@ -143,20 +127,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
             onChange={(e) => updateFilter("budgetMax", e.target.value)}
           />
         </div>
-      </div>
-
-      {/* Job Type */}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Job Type:</label>
-        <select
-          className="border p-1"
-          value={jobType}
-          onChange={(e) => updateFilter("jobType", e.target.value)}
-        >
-          <option value="both">Both</option>
-          <option value="hourly">Hourly</option>
-          <option value="fixed">Fixed</option>
-        </select>
       </div>
 
       {/* Connect Range */}
@@ -183,7 +153,7 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
       {/* Client Filters */}
       <div className="border-t pt-4 mt-4">
         <h3 className="font-semibold mb-2">Client Filters</h3>
-        <div className="mb-2 flex gap-2">
+        <div className="mb-2 flex flex-col gap-2">
           <div>
             <label className="block mb-1">Dollar Spent (Min - Max)</label>
             <div className="flex gap-2">
@@ -222,27 +192,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
                 onChange={(e) => updateFilter("hiresMax", e.target.value)}
               />
             </div>
-          </div>
-        </div>
-
-        <div className="mb-2 flex gap-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isEnterprise"
-              checked={isEnterprise}
-              onChange={() => updateFilter("isEnterprise", !isEnterprise)}
-            />
-            <label htmlFor="isEnterprise">Enterprise Jobs Only</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isPremium"
-              checked={isPremium}
-              onChange={() => updateFilter("isPremium", !isPremium)}
-            />
-            <label htmlFor="isPremium">Premium Jobs Only</label>
           </div>
         </div>
 
@@ -308,21 +257,6 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
           onChange={(e) => setSkillsInput(e.target.value)}
           onBlur={handleSkillsBlur}
         />
-      </div>
-
-      {/* Tier */}
-      <div className="mt-4">
-        <label className="block mb-1 font-medium">Tier:</label>
-        <select
-          className="border p-1"
-          value={tier}
-          onChange={(e) => updateFilter("tier", e.target.value)}
-        >
-          <option value="">All Tiers</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Expert">Expert</option>
-        </select>
       </div>
 
       {/* Proposals */}
