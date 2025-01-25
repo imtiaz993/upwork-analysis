@@ -53,15 +53,15 @@ function JobCard({ job, storeOldJob }) {
       <div className="flex items-center gap-2 text-gray-700">
         <HiOutlineCurrencyDollar className="h-5 w-5 text-green-600" />
         <p className="capitalize">
-          <strong>{job.jobType}</strong> – {job.tier} –{" "}
+          {job.jobType} – {job.tier} –{" "}
           <span className="font-bold">
-            Est. Budget: ${numeral(job.budget).format("0.[0]a")}
+            Budget: ${numeral(job.budget).format("0.[0]a")}
           </span>
         </p>
       </div>
 
       {/* Description */}
-      <p className="text-gray-600">
+      <p className="text-gray-600 text-sm">
         <span className={showMore ? "" : "line-clamp-3"}>
           {job.description}
         </span>
@@ -148,18 +148,6 @@ function JobCard({ job, storeOldJob }) {
         <div className="flex items-center gap-2">
           <HiOutlineStar className="h-5 w-5 text-gray-500" />
           Reviews: <strong>{client.reviewsCount}</strong>
-        </div>
-
-        {/* Enterprise */}
-        <div className="flex items-center gap-2">
-          <HiOutlineLightningBolt className="h-5 w-5 text-gray-500" />
-          Enterprise: <strong>{job.isEnterprise ? "Yes" : "No"}</strong>
-        </div>
-
-        {/* Premium */}
-        <div className="flex items-center gap-2">
-          <HiOutlineLightningBolt className="h-5 w-5 text-gray-500" />
-          Premium: <strong>{job.isPremium ? "Yes" : "No"}</strong>
         </div>
       </div>
     </div>

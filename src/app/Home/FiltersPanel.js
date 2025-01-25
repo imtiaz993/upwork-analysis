@@ -11,10 +11,8 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
     hideOldJobs,
     paymentVerified,
     postedHours,
-    projectDuration,
     budgetMin,
     budgetMax,
-    jobType,
     connectRangeMin,
     connectRangeMax,
 
@@ -27,11 +25,7 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
 
     reviewsCountMin,
     reviewsCountMax,
-    isEnterprise,
-    isPremium,
 
-    skillsFilter,
-    tier,
     proposalsMin,
     proposalsMax,
 

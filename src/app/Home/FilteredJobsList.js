@@ -24,7 +24,7 @@ export default function FilteredJobsList({ filteredJobs = [], storeOldJob }) {
     <div>
       <div className="flex justify-between items-center p-4 pb-0 sticky top-0 bg-gray-50 shadow">
         <h2 className="text-xl font-semibold">
-          Filtered Results ({filteredJobs.length})
+          Filtered Results ({getFilteredJobs().length})
         </h2>
         <div className="flex border-b border-gray-300 mb-4">
           {["All", "Fixed Price", "Hourly"].map((tab) => (
@@ -57,7 +57,7 @@ export default function FilteredJobsList({ filteredJobs = [], storeOldJob }) {
         <p className="text-gray-500 p-4">No jobs match the selected filters.</p>
       )}
       <div className="flex flex-col gap-4 p-4">
-        {filteredJobs.map((job, index) => (
+        {getFilteredJobs().map((job, index) => (
           <JobCard key={index} job={job} storeOldJob={storeOldJob} />
         ))}
       </div>
