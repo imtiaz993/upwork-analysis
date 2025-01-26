@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import Select from "react-select";
 import { Switch } from "@headlessui/react";
 import { countryOptions } from "./countryList";
+import {
+  FaFilter,
+  FaClock,
+  FaDollarSign,
+  FaLink,
+  FaGlobe,
+  FaSave,
+  FaUsers,
+  FaBriefcase,
+  FaMoneyBillWave,
+} from "react-icons/fa";
+import InputField from "./components/InputField";
+import RangeField from "./components/RangeField";
 
 export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
   const [isInclude, setIsInclude] = useState(true);
@@ -42,23 +55,31 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
   };
 
   return (
-    <div className="mb-6 bg-white p-4 rounded shadow">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Filters</h2>
+    <div className="mb-6 bg-white p-6 rounded-xl shadow-lg">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+          <FaFilter className="text-blue-600 w-4 h-4" /> Filters
+        </h2>
         <button
-          className="py-1.5 px-4 bg-blue-600 text-white rounded"
+          className="flex items-center gap-2 py-1.5 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           onClick={onSaveFilters}
         >
-          Save Filters
+          <FaSave />
+          <span>Save Filters</span>
         </button>
       </div>
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-gray-700 font-medium">Hide Read Jobs</span>
+
+      {/* Hide Read Jobs */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <span className="text-gray-700 font-medium flex items-center gap-2">
+          <FaClock className="text-gray-600" />
+          Hide Read Jobs
+        </span>
         <Switch
           checked={hideOldJobs}
           onChange={() => updateFilter("hideOldJobs", !hideOldJobs)}
           className={`${
-            hideOldJobs ? "bg-blue-600" : "bg-red-600"
+            hideOldJobs ? "bg-blue-600" : "bg-gray-300"
           } relative inline-flex h-6 w-11 items-center rounded-full`}
         >
           <span
@@ -70,126 +91,101 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
       </div>
 
       {/* Payment Verified */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-6">
         <input
           type="checkbox"
           id="paymentVerified"
+          className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
           checked={paymentVerified}
           onChange={() => updateFilter("paymentVerified", !paymentVerified)}
         />
-        <label htmlFor="paymentVerified">Payment Verified</label>
+        <label htmlFor="paymentVerified" className="text-gray-700 font-medium">
+          Payment Verified
+        </label>
       </div>
 
-      {/* Posted Time (hours) */}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Posted within X hours:</label>
-        <input
-          type="number"
-          className="border p-1 w-20"
+      <div className="space-y-6">
+        {/* Posted Time */}
+        <InputField
+          label="Posted within X hours"
           value={postedHours}
-          onChange={(e) => updateFilter("postedHours", e.target.value)}
+          placeholder="Hours"
+          onChange={(value) => updateFilter("postedHours", value)}
+          icon={<FaClock />}
         />
-      </div>
 
-      {/* Budget Range (Fixed) */}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Budget Range (Fixed):</label>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Min"
-            value={budgetMin}
-            onChange={(e) => updateFilter("budgetMin", e.target.value)}
-          />
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Max"
-            value={budgetMax}
-            onChange={(e) => updateFilter("budgetMax", e.target.value)}
-          />
-        </div>
-      </div>
+        {/* Budget Range */}
+        <RangeField
+          label="Budget Range (Fixed)"
+          minValue={budgetMin}
+          maxValue={budgetMax}
+          onMinChange={(value) => updateFilter("budgetMin", value)}
+          onMaxChange={(value) => updateFilter("budgetMax", value)}
+          icon={<FaDollarSign />}
+        />
 
-      {/* Connect Range */}
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Connect Range:</label>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Min"
-            value={connectRangeMin}
-            onChange={(e) => updateFilter("connectRangeMin", e.target.value)}
-          />
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Max"
-            value={connectRangeMax}
-            onChange={(e) => updateFilter("connectRangeMax", e.target.value)}
-          />
-        </div>
-      </div>
+        {/* Connect Range */}
+        <RangeField
+          label="Connect Range"
+          minValue={connectRangeMin}
+          maxValue={connectRangeMax}
+          onMinChange={(value) => updateFilter("connectRangeMin", value)}
+          onMaxChange={(value) => updateFilter("connectRangeMax", value)}
+          icon={<FaLink />}
+        />
 
-      {/* Client Filters */}
-      <div className="border-t pt-4 mt-4">
-        <h3 className="font-semibold mb-2">Client Filters</h3>
-        <div className="mb-2 flex flex-col gap-2">
-          <div>
-            <label className="block mb-1">Dollar Spent (Min - Max)</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                className="border p-1 w-20"
-                placeholder="Min"
-                value={dollarSpentMin}
-                onChange={(e) => updateFilter("dollarSpentMin", e.target.value)}
-              />
-              <input
-                type="number"
-                className="border p-1 w-20"
-                placeholder="Max"
-                value={dollarSpentMax}
-                onChange={(e) => updateFilter("dollarSpentMax", e.target.value)}
-              />
-            </div>
-          </div>
+        {/* Dollar Spent */}
+        <RangeField
+          label="Dollar Spent (Min - Max)"
+          minValue={dollarSpentMin}
+          maxValue={dollarSpentMax}
+          onMinChange={(value) => updateFilter("dollarSpentMin", value)}
+          onMaxChange={(value) => updateFilter("dollarSpentMax", value)}
+          icon={<FaMoneyBillWave />}
+        />
 
-          <div>
-            <label className="block mb-1">Hires (Min - Max)</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                className="border p-1 w-20"
-                placeholder="Min"
-                value={hiresMin}
-                onChange={(e) => updateFilter("hiresMin", e.target.value)}
-              />
-              <input
-                type="number"
-                className="border p-1 w-20"
-                placeholder="Max"
-                value={hiresMax}
-                onChange={(e) => updateFilter("hiresMax", e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+        {/* Hires */}
+        <RangeField
+          label="Hires (Min - Max)"
+          minValue={hiresMin}
+          maxValue={hiresMax}
+          onMinChange={(value) => updateFilter("hiresMin", value)}
+          onMaxChange={(value) => updateFilter("hiresMax", value)}
+          icon={<FaBriefcase />}
+        />
 
-        {/* Country Include/Exclude Toggle */}
-        <div className="mb-4">
-          <label className="block mb-1 font-medium">Country Filter</label>
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-gray-700 font-medium">
-              {isInclude ? "Include" : "Exclude"}
-            </span>
+        {/* Proposals */}
+        <RangeField
+          label="Proposals (Min - Max)"
+          minValue={proposalsMin}
+          maxValue={proposalsMax}
+          onMinChange={(value) => updateFilter("proposalsMin", value)}
+          onMaxChange={(value) => updateFilter("proposalsMax", value)}
+          icon={<FaUsers />}
+        />
+
+        {/* Hourly Rate */}
+        <RangeField
+          label="Hourly Rate (Min - Max)"
+          minValue={hourlyMin}
+          maxValue={hourlyMax}
+          onMinChange={(value) => updateFilter("hourlyMin", value)}
+          onMaxChange={(value) => updateFilter("hourlyMax", value)}
+          icon={<FaDollarSign />}
+        />
+
+        {/* Country Filter */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <label className="text-gray-700 font-medium flex items-center gap-2">
+              <FaGlobe className="text-gray-600" />
+              Country Filter
+            </label>
             <Switch
               checked={isInclude}
               onChange={setIsInclude}
               className={`${
-                isInclude ? "bg-blue-600" : "bg-red-600"
+                isInclude ? "bg-blue-600" : "bg-gray-300"
               } relative inline-flex h-6 w-11 items-center rounded-full`}
             >
               <span
@@ -199,85 +195,14 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
               />
             </Switch>
           </div>
-        </div>
-
-        {/* Country Dropdown */}
-        <div className="mb-4">
-          <label className="block mb-1 font-medium">
-            {isInclude ? "Include Countries" : "Exclude Countries"}
-          </label>
           <Select
             options={countryOptions}
             isMulti
-            className="border border-gray-300 rounded"
-            placeholder="Select countries..."
+            className="border border-gray-300 rounded w-full"
+            placeholder={`${
+              isInclude ? "Include Countries" : "Exclude Countries"
+            }`}
             onChange={handleCountryChange}
-          />
-        </div>
-
-        <div className="mb-2">
-          <label className="block mb-1">Reviews Count (Min - Max)</label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              className="border p-1 w-20"
-              placeholder="Min"
-              value={reviewsCountMin}
-              onChange={(e) => updateFilter("reviewsCountMin", e.target.value)}
-            />
-            <input
-              type="number"
-              className="border p-1 w-20"
-              placeholder="Max"
-              value={reviewsCountMax}
-              onChange={(e) => updateFilter("reviewsCountMax", e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Proposals */}
-      <div className="mt-4">
-        <label className="block mb-1 font-medium">
-          Proposals Range (Min - Max)
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Min"
-            value={proposalsMin}
-            onChange={(e) => updateFilter("proposalsMin", e.target.value)}
-          />
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Max"
-            value={proposalsMax}
-            onChange={(e) => updateFilter("proposalsMax", e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Hourly Rate Range */}
-      <div className="mt-4">
-        <label className="block mb-1 font-medium">
-          Hourly Rate (Min - Max)
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Min"
-            value={hourlyMin}
-            onChange={(e) => updateFilter("hourlyMin", e.target.value)}
-          />
-          <input
-            type="number"
-            className="border p-1 w-20"
-            placeholder="Max"
-            value={hourlyMax}
-            onChange={(e) => updateFilter("hourlyMax", e.target.value)}
           />
         </div>
       </div>
