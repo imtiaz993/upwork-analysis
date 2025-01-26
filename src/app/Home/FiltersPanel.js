@@ -53,7 +53,7 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
         </button>
       </div>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-gray-700 font-medium">Hide Jobs</span>
+        <span className="text-gray-700 font-medium">Hide Read Jobs</span>
         <Switch
           checked={hideOldJobs}
           onChange={() => updateFilter("hideOldJobs", !hideOldJobs)}

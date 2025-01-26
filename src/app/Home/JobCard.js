@@ -11,14 +11,14 @@ import {
   HiOutlineUsers,
   HiOutlineClipboardList,
   HiOutlineStar,
-  HiTrash,
   HiStar,
+  HiBookOpen,
 } from "react-icons/hi";
 
-function JobCard({ job, storeOldJob }) {
+function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
   const { client } = job;
   const [showMore, setShowMore] = useState(false);
-  console.log(job);
+
 
   const timeAgo = job.publishedOn
     ? formatDistanceToNow(new Date(job.publishedOn))
@@ -36,14 +36,25 @@ function JobCard({ job, storeOldJob }) {
 
         <div>
           <button
-            className="p-2 rounded-full text-gray-600 hover:text-red-600"
+            className={`p-2 rounded-full text-gray-600 hover:text-blue-600 ${
+              hiddenJobs.find((i) => i === job.ciphertext)
+                ? "!text-blue-600"
+                : ""
+            }`}
             title="Hide/Remove Job"
             onClick={() => {
-              storeOldJob([job]);
-              toast.success("Job removed from list.");
+              if (hiddenJobs.find((i) => i === job.ciphertext)) {
+                const newList = hiddenJobs.filter((i) => i === job.ciphertext);
+                setHiddenJobs(newList);
+                localStorage.setItem("oldJobIds", JSON.stringify(newList));
+                toast.success("Job added to the list.");
+              } else {
+                storeOldJob([job]);
+                toast.success("Job removed from list.");
+              }
             }}
           >
-            <HiTrash className="h-5 w-5" />
+            <HiBookOpen className="h-7 w-7" />
           </button>
         </div>
       </div>
