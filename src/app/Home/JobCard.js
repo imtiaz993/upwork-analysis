@@ -14,11 +14,11 @@ import {
   HiStar,
   HiBookOpen,
 } from "react-icons/hi";
+import { MdLaptopWindows } from "react-icons/md";
 
 function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
   const { client } = job;
   const [showMore, setShowMore] = useState(false);
-
 
   const timeAgo = job.publishedOn
     ? formatDistanceToNow(new Date(job.publishedOn))
@@ -31,7 +31,14 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
           <p className="text-sm text-gray-500 capitalize">
             Posted {timeAgo} ago
           </p>
-          <h2 className="text-2xl font-semibold text-gray-900">{job.title}</h2>
+          <a
+            href={`https://www.upwork.com/jobs/${job.ciphertext}`}
+            target="_blank"
+          >
+            <h2 className="text-2xl font-semibold text-gray-900 hover:text-green-600 hover:underline">
+              {job.title}
+            </h2>
+          </a>
         </div>
 
         <div>
@@ -44,7 +51,7 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
             title="Hide/Remove Job"
             onClick={() => {
               if (hiddenJobs.find((i) => i === job.ciphertext)) {
-                const newList = hiddenJobs.filter((i) => i === job.ciphertext);
+                const newList = hiddenJobs.filter((i) => i !== job.ciphertext);
                 setHiddenJobs(newList);
                 localStorage.setItem("oldJobIds", JSON.stringify(newList));
                 toast.success("Job added to the list.");
@@ -98,7 +105,7 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-4 border-t border-gray-200 text-gray-500">
         <div className="flex items-center gap-2">
           <HiOutlineCurrencyDollar className="h-5 w-5 text-gray-500" />
-          Connect Price:{" "}
+          Connects:{" "}
           <span className="text-gray-700 font-bold">{job.connectPrice}</span>
         </div>
 
@@ -124,15 +131,26 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
           <HiOutlineCurrencyDollar className="h-5 w-5 text-gray-500" />
           <strong>{numeral(client.totalSpent).format("0.[0]a")}</strong>spent
         </div>
-
+        <div className="flex items-center gap-2">
+          <HiOutlineUsers className="h-5 w-5 text-gray-500" />
+          Total Hires: <strong>{client.totalHires}</strong>
+        </div>
+        <div className="flex items-center gap-2">
+          <HiStar className="h-5 w-5 text-gray-500" />$ Spent/Hire:{" "}
+          <strong>
+            {numeral(client.totalSpent / client.totalHires).format("0.[0]a")}
+          </strong>
+        </div>
         <div className="flex items-center gap-2">
           <HiOutlineLocationMarker className="h-5 w-5 text-gray-500" />
           {client.location?.country}
         </div>
-        <div className="flex items-center gap-2">
-          <HiOutlineLocationMarker className="h-5 w-5 text-gray-500" />
-          Engagement: <strong>{job.type === 2 ? job.engagement : ""}</strong>
-        </div>
+        {job.type === 2 && (
+          <div className="flex items-center gap-2">
+            <MdLaptopWindows className="h-5 w-5 text-gray-500" />
+            Engagement: <strong>{job.type === 2 ? job.engagement : ""}</strong>
+          </div>
+        )}
 
         <div className="flex items-center gap-2">
           <HiOutlineClipboardList className="h-5 w-5 text-gray-500" />
@@ -145,18 +163,12 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <HiOutlineUsers className="h-5 w-5 text-gray-500" />
-          Hires: <strong>{client.totalHires}</strong>
+          <HiOutlineStar className="h-5 w-5 text-gray-500" />
+          Total Reviews: <strong>{client.totalReviews}</strong>
         </div>
-
         <div className="flex items-center gap-2">
           <HiStar className="h-5 w-5 text-gray-500" />
-          Feedbacks: <strong>{client.totalFeedback}</strong>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <HiOutlineStar className="h-5 w-5 text-gray-500" />
-          Reviews: <strong>{client.totalReviews}</strong>
+          Avg. Rating: <strong>{client.totalFeedback}</strong>
         </div>
       </div>
     </div>
