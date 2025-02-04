@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import JsonInput from "./JsonInput";
 import FiltersPanel from "./FiltersPanel";
 import FilteredJobsList from "./FilteredJobsList";
+import { intialFilters } from "./data";
 
 export default function HomePage() {
   const [jsonInput, setJsonInput] = useState("");
@@ -38,6 +39,9 @@ export default function HomePage() {
       } catch (err) {
         console.error("Error parsing filters from localStorage", err);
       }
+    } else {
+      setFilters(intialFilters);
+      localStorage.setItem("savedUpworkFilters", JSON.stringify(intialFilters));
     }
   }, []);
 
