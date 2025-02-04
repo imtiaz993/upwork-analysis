@@ -17,8 +17,6 @@ import InputField from "./components/InputField";
 import RangeField from "./components/RangeField";
 
 export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
-  const [isInclude, setIsInclude] = useState(true);
-
   // For convenience, destructure the filters object
   const {
     hideOldJobs,
@@ -42,16 +40,15 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
 
     hourlyMin,
     hourlyMax,
+
+    isInclude,
+    listOfCountries,
   } = filters;
 
   // Handle country selection
   const handleCountryChange = (selectedOptions) => {
     const selectedCountries = selectedOptions.map((option) => option.value);
-    if (isInclude) {
-      updateFilter("includeLocations", selectedCountries);
-    } else {
-      updateFilter("excludeLocations", selectedCountries);
-    }
+    updateFilter("listOfCountries", selectedCountries);
   };
 
   return (
@@ -79,7 +76,7 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
           checked={hideOldJobs}
           onChange={() => updateFilter("hideOldJobs", !hideOldJobs)}
           className={`${
-            hideOldJobs ? "bg-blue-600" : "bg-gray-300"
+            hideOldJobs ? "bg-blue-600" : "bg-red-600"
           } relative inline-flex h-6 w-11 items-center rounded-full`}
         >
           <span
@@ -179,13 +176,15 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
           <div className="flex items-center justify-between mb-4">
             <label className="text-gray-700 font-medium flex items-center gap-2">
               <FaGlobe className="text-gray-600" />
-              Country Filter
+              Country ({isInclude ? "Included" : "Excluded"})
             </label>
             <Switch
               checked={isInclude}
-              onChange={setIsInclude}
+              onChange={(e) => {
+                updateFilter("isInclude", e);
+              }}
               className={`${
-                isInclude ? "bg-blue-600" : "bg-gray-300"
+                isInclude ? "bg-blue-600" : "bg-red-600"
               } relative inline-flex h-6 w-11 items-center rounded-full`}
             >
               <span
@@ -198,6 +197,7 @@ export default function FiltersPanel({ filters, updateFilter, onSaveFilters }) {
           <Select
             options={countryOptions}
             isMulti
+            value={listOfCountries.map((i) => ({ label: i, value: i }))}
             className="border border-gray-300 rounded w-full"
             placeholder={`${
               isInclude ? "Include Countries" : "Exclude Countries"

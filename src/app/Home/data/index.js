@@ -16,4 +16,6 @@ export const intialFilters = {
   proposalsMax: "",
   hourlyMin: "",
   hourlyMax: "",
+  isInclude: false,
+  listOfCountries: ["India", "Pakistan", "Bangladesh"],
 };

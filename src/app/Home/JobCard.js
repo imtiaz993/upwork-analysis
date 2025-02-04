@@ -79,7 +79,7 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
         </p>
       </div>
 
-      <p className="text-gray-600 text-sm">
+      <p className="text-gray-600">
         <span className={showMore ? "" : "line-clamp-3"}>
           {job.description}
         </span>
@@ -91,11 +91,11 @@ function JobCard({ job, storeOldJob, hiddenJobs, setHiddenJobs }) {
         </button>
       </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex overflow-auto gap-2 pb-1">
         {job.skills.map((tag) => (
           <span
             key={tag}
-            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm whitespace-nowrap"
           >
             {tag.prefLabel}
           </span>

@@ -27,6 +27,8 @@ export default function HomePage() {
     proposalsMax: "",
     hourlyMin: "",
     hourlyMax: "",
+    isInclude: false,
+    listOfCountries: [],
   });
 
   // On mount, try to load filters from localStorage
@@ -35,6 +37,8 @@ export default function HomePage() {
     if (savedFilters) {
       try {
         const parsed = JSON.parse(savedFilters);
+        console.log(parsed);
+
         setFilters(parsed);
       } catch (err) {
         console.error("Error parsing filters from localStorage", err);
@@ -121,6 +125,8 @@ export default function HomePage() {
         proposalsMax,
         hourlyMin,
         hourlyMax,
+        isInclude,
+        listOfCountries,
       } = filters;
 
       if (job.isApplied) return false;
@@ -153,7 +159,7 @@ export default function HomePage() {
       if (dollarSpentMax && client.totalSpent > dollarSpentMax) return false;
       // hires
       if (hiresMin && client.totalHires < hiresMin) return false;
-      if (hiresMax && client.hirtotalHireses > hiresMax) return false;
+      if (hiresMax && client.totalHires > hiresMax) return false;
 
       // reviews
       if (reviewsCountMin && client.totalFeedback < reviewsCountMin)
@@ -171,6 +177,20 @@ export default function HomePage() {
       if (job.type === 2) {
         if (hourlyMin && job.hourlyBudget?.min < hourlyMin) return false;
         if (hourlyMax && job.hourlyBudget?.max > hourlyMax) return false;
+      }
+
+      // 12. Country filter
+      // If 'isInclude' is true => include jobs only from the countries in listOfCountries
+      // If 'isInclude' is false => exclude jobs that are in listOfCountries
+      if (listOfCountries.length > 0) {
+        const country = client.location?.country;
+        if (isInclude) {
+          // If country isn't in the list, hide this job
+          if (!listOfCountries.includes(country)) return false;
+        } else {
+          // If country is in the list, hide this job
+          if (listOfCountries.includes(country)) return false;
+        }
       }
 
       return true;
