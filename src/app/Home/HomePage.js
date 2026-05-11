@@ -62,16 +62,22 @@ export default function HomePage() {
     }));
   };
 
-  const handleParseJson = () => {
-    try {
-      const parsed = JSON.parse(jsonInput).data.bestMatchJobsFeed.results;
-      setJobs(parsed);
-    } catch (error) {
-      console.error(error);
-      alert("Invalid JSON format");
-    }
-  };
+const handleParseJson = () => {
+  try {
+    const parsed =
+      JSON.parse(jsonInput)?.data?.bestMatchRecommendationsFeed?.results;
 
+    if (!Array.isArray(parsed)) {
+      alert("No jobs found in JSON");
+      return;
+    }
+
+    setJobs(parsed);
+  } catch (error) {
+    console.error(error);
+    alert("Invalid JSON format");
+  }
+};
   function getOldJobs() {
     const stored = localStorage.getItem("oldJobIds");
     return stored ? JSON.parse(stored) : [];
