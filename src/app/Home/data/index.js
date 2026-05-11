@@ -22,7 +22,7 @@ export const intialFilters = {
 
 export const sampleData = {
   data: {
-    bestMatchJobsFeed: {
+    bestMatchRecommendationsFeed: {
       results: [
         {
           uid: "1886474976865861135",
